@@ -159,7 +159,7 @@ const DashboardPage = ({ jobs, onOpenJob, onDeleteJob, onNewTranscription }) => 
             { label: "Total Sermons", value: jobs.length, color: T.gold, icon: "🎙" },
             { label: "Completed", value: completed.length, color: T.sage, icon: "✓" },
             { label: "Processing", value: processing.length, color: T.cobalt, icon: "⚡" },
-            { label: "Total Hours", value: `${Math.round(jobs.reduce((a, b) => a + (b.durationSeconds || 0), 0) / 3600)}h`, color: T.sienna, icon: "⏱" },
+            { label: "Total Hours", value: `${Math.round(jobs.reduce((a, b) => a + (b.durationSeconds || 0), 0) / 3600)}`, color: T.sienna, icon: "⏱" },
           ].map((stat, i) => (
             <Card key={i} style={{ padding: 20 }}>
               <div style={{ fontSize: 28, marginBottom: 8 }}>{stat.icon}</div>
