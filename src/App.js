@@ -5,7 +5,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
    Now with Landing Page & Navigation
 ══════════════════════════════════════════════════════════ */
 
-const API_URL = 'https://shepherd-ai-ae3a.onrender.com/api';
+const API_URL = 'http://localhost:5000/api';
 const API_KEY = 'shepherd-AI-2026';
 
 const apiFetch = (path, opts = {}) => {
@@ -159,7 +159,7 @@ const DashboardPage = ({ jobs, onOpenJob, onDeleteJob, onNewTranscription }) => 
             { label: "Total Sermons", value: jobs.length, color: T.gold, icon: "🎙" },
             { label: "Completed", value: completed.length, color: T.sage, icon: "✓" },
             { label: "Processing", value: processing.length, color: T.cobalt, icon: "⚡" },
-            { label: "Total Hours", value: `${Math.round(jobs.reduce((a, b) => a + (b.durationSeconds || 0), 0) / 3600)}`, color: T.sienna, icon: "⏱" },
+            { label: "Total Hours", value: `${Math.round(jobs.reduce((a, b) => a + (b.durationSeconds || 0), 0) / 3600)}h`, color: T.sienna, icon: "⏱" },
           ].map((stat, i) => (
             <Card key={i} style={{ padding: 20 }}>
               <div style={{ fontSize: 28, marginBottom: 8 }}>{stat.icon}</div>
@@ -1485,17 +1485,15 @@ const WorkspaceStage = ({ results, jobId }) => {
 
 /* ══ ROOT APP ════════════════════════════════════════════════ */
 const ShepherdTranscription = () => {
-  const [stage, setStage] = useState("upload");
   const [progress, setProgress] = useState(0);
   const [step, setStep] = useState("");
   const [fileName, setFileName] = useState("");
   const [results, setResults] = useState(null);
   const [jobId, setJobId] = useState(null);
-  const [mode, setMode] = useState("online");
   const [currentView, setCurrentView] = useState("landing");
   const [dashboardJobs, setDashboardJobs] = useState([]);
   const [recentJobs, setRecentJobs] = useState([]);
-  const [loadingJobs, setLoadingJobs] = useState(false);
+  const [loadingJobs] = useState(false);
   const pollRef = useRef(null);
 
   // Load jobs from sessionStorage
@@ -1538,7 +1536,6 @@ const ShepherdTranscription = () => {
         if (job.status === 'completed') {
           stopPolling();
           setResults(job.results || job);
-          setStage("done");
           setCurrentView("workspace");
 
           // Update job in dashboard
@@ -1579,7 +1576,6 @@ const ShepherdTranscription = () => {
         if (!res.ok) throw new Error('Failed to load job');
         const data = await res.json();
         setResults(data.results || data);
-        setStage("done");
         setCurrentView("workspace");
       } catch (err) {
         alert('Could not load results — job may have expired.');
@@ -1587,7 +1583,6 @@ const ShepherdTranscription = () => {
     } else if (job.status === 'processing' || job.status === 'queued') {
       setProgress(job.progress || 0);
       setStep(job.step || "");
-      setStage("processing");
       setCurrentView("processing");
       startPolling(job.id);
     }
@@ -1600,7 +1595,6 @@ const ShepherdTranscription = () => {
 
   const startProcessing = useCallback(async (file) => {
     setFileName(file.name);
-    setStage("processing");
     setCurrentView("processing");
     setProgress(0);
     setStep("Uploading…");
@@ -1636,25 +1630,8 @@ const ShepherdTranscription = () => {
     }
   }, [dashboardJobs, startPolling]);
 
-  const reset = () => {
-    stopPolling();
-    setCurrentView("upload");
-    setResults(null);
-    setJobId(null);
-    setProgress(0);
-    setStep("");
-    setFileName("");
-  };
-
   const navigate = (view) => {
     setCurrentView(view);
-    if (view === "upload") {
-      setStage("upload");
-    } else if (view === "dashboard") {
-      // Stay on dashboard
-    } else if (view === "landing") {
-      // Stay on landing
-    }
   };
 
   return (
