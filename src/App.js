@@ -5,7 +5,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
    Now with Landing Page & Navigation
 ══════════════════════════════════════════════════════════ */
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://shepherd-ai-ae3a.onrender.com/api';
 const API_KEY = 'shepherd-AI-2026';
 
 const apiFetch = (path, opts = {}) => {
